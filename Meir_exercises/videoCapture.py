@@ -11,19 +11,22 @@ cap = cv2.VideoCapture(0)
 face = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 side = cv2.CascadeClassifier('haarcascade_profileface.xml')
 eye = cv2.CascadeClassifier('haarcascade_eye.xml')
-smile = cv2.CascadeClassifier('haarcascade_smile')
 
+N=2
 
 while(True):
 
         # Capture frame-by-frame, ret is boolian, false if frame
         # not read correctly
         ret, frame = cap.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        rows, cols, _ = frame.shape
+
+        gray = cv2.cvtColor(cv2.resize(frame,(cols/N,rows/N)), cv2.COLOR_BGR2GRAY)
 
         # Display the resulting frame
 
-        faces = face.detectMultiScale(gray, 1.3, 5)
+        faces = face.detectMultiScale(gray, 2, 5)
 
         if len(faces):
             for (x, _, _, _) in faces:
@@ -32,7 +35,7 @@ while(True):
             c2 = 0
             c3 = 0
         else :
-            faces = side.detectMultiScale(gray, 1.3, 5)
+            faces = side.detectMultiScale(gray, 2, 5)
 
             if len(faces):
                 for (x, _, _, _) in faces:
@@ -41,16 +44,22 @@ while(True):
                 c2=255
                 c3=0
             else:
-                faces = side.detectMultiScale(cv2.flip(gray,1), 1.3, 5)
-                _, cols, _ = frame.shape
+                faces = side.detectMultiScale(cv2.flip(gray,1), 2, 5)
                 for (x, _, w, _) in faces:
-                    x_co=cols-x-w
+                    x_co=(cols/N)-x-w
                 c1=0
                 c2=0
                 c3=255
 
+
         for (x,y,w,h) in faces:
+            x_co *= N
+            y *= N
+            w *= N
+            h *= N
             cv2.rectangle(frame,(x_co,y),(x_co+w,y+h),(c1,c2,c3),5)
+
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             roi_gray = gray[y:y+h, x_co:x_co+w]
             roi_color = frame[y:y+h, x_co:x_co+w]
             eyes = eye.detectMultiScale(roi_gray, 1.3, 5)
