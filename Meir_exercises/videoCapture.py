@@ -53,7 +53,7 @@ while(True):
             cv2.rectangle(frame,(x_co,y),(x_co+w,y+h),(c1,c2,c3),5)
             roi_gray = gray[y:y+h, x_co:x_co+w]
             roi_color = frame[y:y+h, x_co:x_co+w]
-            eyes = eye.detectMultiScale(roi_gray)
+            eyes = eye.detectMultiScale(roi_gray, 1.3, 5)
             for (x,y,w,h) in eyes:
                 cv2.circle(roi_color,(x+(w/2),y+(h/2)),(w/4) ,(0,0,0),w/2)
                 cv2.circle(roi_color, (x + (w / 2), y + (h / 2)), (w/10), (255, 255, 255), w*2/3)
